@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Plus_Jakarta_Sans, Fraunces, JetBrains_Mono } from "next/font/google"
 import { NextIntlClientProvider } from "next-intl"
 import { getMessages, setRequestLocale } from "next-intl/server"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -9,9 +9,19 @@ import type { Metadata } from "next"
 
 import "../globals.css"
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
+const fontSans = Plus_Jakarta_Sans({
+  subsets:['latin'],
+  variable:'--font-sans',
+  fallback: ['sans-serif']
+})
 
-const fontMono = Geist_Mono({
+const fontSerif = Fraunces({
+  subsets:['latin'],
+  variable:'--font-serif',
+  fallback: ["Georgia", "serif"]
+})
+
+const fontMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
@@ -43,9 +53,9 @@ export default async function LocaleLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
+      className={cn("antialiased", fontMono.variable, fontSans.variable, fontSerif.variable, "scroll-smooth")}
     >
-      <body>
+      <body className="bg-background text-foreground">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>{children}</ThemeProvider>
         </NextIntlClientProvider>

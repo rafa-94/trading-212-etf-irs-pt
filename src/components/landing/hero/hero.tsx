@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { getTranslations } from "next-intl/server"
-import { Section } from "@/components/landing/section";
+import { Section } from "@/components/landing/section"
+import { ArrowRight } from "lucide-react"
+
 
 interface HeroProps {
   className?: string
@@ -11,135 +13,98 @@ export async function Hero({ className }: HeroProps) {
   const t = await getTranslations('landing.hero.trust');
 
   return (
-    <Section className={cn("pt-36 pb-24",className)}>
+    <Section className={cn("pt-36 pb-24", className)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <div className="flex flex-col gap-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-fis-accent/13 border border-fis-accent font-mono text-[0.72rem] text-fis-accent w-fit">
-            <div className="w-1.5 h-1.5 rounded-full bg-fis-accent"></div>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 border border-primary/40 font-mono text-[0.72rem] text-primary w-fit">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
             <span>DECLARAÇÃO IRS 2024 · Modelo 3</span>
           </div>
 
-          <h1 className="font-serif text-[clamp(2.5rem,4.5vw,3.6rem)] font-bold leading-[1.08] tracking-tight text-fis-text">
-            O seu IRS declarado com <span className="text-fis-accent italic">precisão cirúrgica</span>
+          <h1 className="font-serif text-[clamp(2.5rem,4.5vw,3.6rem)] font-bold leading-[1.08] tracking-tight text-foreground">
+            O seu IRS declarado com <span className="text-primary italic">precisão cirúrgica</span>
           </h1>
 
-          <p className="text-[1.05rem] text-fis-muted leading-[1.75] max-w-[480px]">
+          <p className="text-[1.05rem] text-muted-foreground leading-[1.75] max-w-[480px]">
             Carregue o CSV ou Excel do seu broker. O Fiscus calcula automaticamente os ganhos e perdas de ações, ETFs, dividendos, juros e criptomoedas — e preenche os anexos da AT.
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
-            <Button className="h-9 rounded-lg bg-fis-accent text-fis-bg hover:bg-fis-accent/90 shadow-lg hover:shadow-emerald-500/30">
-              <span>Abrir o Fiscus</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Button>
-            <Button variant="outline" className="h-9 rounded-lg border-fis-border-light text-fis-muted hover:border-fis-accent hover:text-fis-accent">
-              Como funciona
-            </Button>
+              <a href="/app" className={buttonVariants({ variant: "default", size: "lg"})}>
+                <ArrowRight />
+                Abrir o Fiscus
+              </a>
+              <a href="#como-funciona" className={buttonVariants({ variant: "outline", size: "lg" })}>Como funciona</a>
           </div>
 
           <div className="flex flex-wrap items-center gap-6">
             {[
               {
+                key: "browser",
                 label: t("browser"),
                 icon: (
                   <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-                    <path
-                      d="M7 1L8.8 5H13L9.5 7.5L11 12L7 9.5L3 12L4.5 7.5L1 5H5.2L7 1Z"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.2"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M7 1L8.8 5H13L9.5 7.5L11 12L7 9.5L3 12L4.5 7.5L1 5H5.2L7 1Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
                   </svg>
                 ),
               },
               {
+                key: "privacy",
                 label: t("privacy"),
                 icon: (
                   <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-                    <rect
-                      x="2"
-                      y="6"
-                      width="10"
-                      height="7"
-                      rx="1.5"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.2"
-                    />
-                    <path
-                      d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
+                    <rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+                    <path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                   </svg>
                 ),
               },
               {
+                key: "fifo",
                 label: t("fifo"),
                 icon: (
                   <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-                    <path
-                      d="M2 7.5L5.5 11 12 3"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M2 7.5L5.5 11 12 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 ),
               },
               {
+                key: "free",
                 label: t("free"),
                 icon: (
                   <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-                    <path
-                      d="M7 1v6l3 2"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle
-                      cx="7"
-                      cy="7"
-                      r="6"
-                      stroke="var(--color-primary)"
-                      strokeWidth="1.2"
-                    />
+                    <path d="M7 1v6l3 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
                   </svg>
                 ),
               },
             ].map((item) => (
-              <div className={cn("flex items-center gap-2 text-xs text-fis-muted font-mono", className)}>
-              <div className="text-fis-accent">{item.icon}</div>
-              {item.label}
-            </div>
+              <div key={item.key} className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                <div className="text-primary">{item.icon}</div>
+                {item.label}
+              </div>
             ))}
-            
           </div>
         </div>
 
         <div className="hidden md:block">
-          <div className="bg-fis-surface border border-fis-border rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-fis-border">
+          <div className="ring-1 ring-border bg-secondary rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
               <div className="flex gap-2.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]"></div>
               </div>
-              <span className="font-mono text-xs text-fis-faint ml-1">fiscus — processamento de trades</span>
+              <span className="font-mono text-xs text-muted-foreground ml-1">fiscus — processamento de trades</span>
             </div>
 
-            <div className="m-6 border-2 border-fis-border-light rounded-xl p-8 text-center border-dashed">
-              <div className="w-11 h-11 rounded-lg bg-fis-accent/13 mx-auto mb-4 flex items-center justify-center">
-                <svg viewBox="0 0 22 22" fill="none" className="w-5.5 h-5.5 text-fis-accent">
+            <div className="m-6 border-2 border-border rounded-xl p-8 text-center border-dashed">
+              <div className="w-11 h-11 rounded-lg bg-primary/10 mx-auto mb-4 flex items-center justify-center text-primary">
+                <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5">
                   <path d="M4 11h14M11 4l7 7-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <p className="font-medium text-fis-text mb-2">Resultados calculados</p>
-              <p className="font-mono text-[0.72rem] text-fis-accent">Ações · ETFs · Dividendos · Crypto</p>
+              <p className="font-medium text-foreground mb-2">Resultados calculados</p>
+              <p className="font-mono text-[0.72rem] text-primary">Ações · ETFs · Dividendos · Crypto</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 m-6">
@@ -157,13 +122,13 @@ export async function Hero({ className }: HeroProps) {
 
 function ResultCard({ label, value, type, sub }: { label: string; value: string; type: "positive" | "negative" | "gold"; sub: string }) {
   const colorClass =
-    type === "positive" ? "text-fis-accent" : type === "negative" ? "text-fis-red" : "text-fis-gold"
+    type === "positive" ? "text-primary" : type === "negative" ? "text-destructive" : "text-gold"
 
   return (
-    <div className="bg-fis-card border border-fis-border rounded-lg p-3.5">
-      <div className="font-mono text-[0.65rem] text-fis-faint uppercase tracking-widest mb-1">{label}</div>
-      <div className={cn("font-mono text-lg font-semibold text-fis-text", colorClass)}>{value}</div>
-      <div className="text-[0.7rem] text-fis-faint mt-1">{sub}</div>
+    <div className="bg-card border border-border rounded-lg p-3.5">
+      <div className="font-mono text-[0.65rem] text-muted-foreground uppercase tracking-widest mb-1">{label}</div>
+      <div className={cn("font-mono text-lg font-semibold", colorClass)}>{value}</div>
+      <div className="text-[0.7rem] text-muted-foreground mt-1">{sub}</div>
     </div>
   )
 }

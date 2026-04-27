@@ -10,7 +10,7 @@ import { Footer } from '@/components/landing/footer'
 
 export default async function Page() {
   return (
-    <div className="min-h-screen bg-fis-bg text-fis-text font-sans">
+    <div className="min-h-screen font-sans">
       <Nav />
       <main>
         <Hero />

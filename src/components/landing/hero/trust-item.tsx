@@ -10,8 +10,8 @@ interface TrustItemProps {
 
 export function TrustItem({ icon, text, className }: TrustItemProps) {
   return (
-    <div className={cn("flex items-center gap-2 text-xs text-fis-muted font-mono", className)}>
-      <div className="text-fis-accent">{icon}</div>
+    <div className={cn("flex items-center gap-2 text-xs text-muted-foreground font-mono", className)}>
+      <div className="text-primary">{icon}</div>
       {text}
     </div>
   )

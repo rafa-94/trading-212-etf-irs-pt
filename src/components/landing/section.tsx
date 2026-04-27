@@ -19,7 +19,7 @@ export function Section({
     <section id={id} className={cn("w-full py-20", className)}>
       <div className={cn("max-w-[1200px] mx-auto px-8", contentClassName)}>
         {title && (
-            <div className="font-mono text-[0.72rem] tracking-widest uppercase text-fis-accent mb-4">
+            <div className="font-mono text-[0.72rem] tracking-widest uppercase text-emerald-400 mb-4">
               // {title}
             </div>
         )}
