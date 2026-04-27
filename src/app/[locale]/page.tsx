@@ -1,23 +1,27 @@
-import {getTranslations} from 'next-intl/server';
-import { Button } from "@/components/ui/button"
+import { Nav } from '@/components/landing/nav'
+import { Hero } from '@/components/landing/hero/hero'
+import { FeaturesGrid } from '@/components/landing/features-grid'
+import { StepsGrid } from '@/components/landing/steps-grid'
+import { XmlSection } from '@/components/landing/xml-section'
+import { PrivacySection } from '@/components/landing/privacy'
+import { BrokersSection } from '@/components/landing/brokers'
+import { CtaSection } from '@/components/landing/cta'
+import { Footer } from '@/components/landing/footer'
 
 export default async function Page() {
-  const t = await getTranslations('test');
-
-
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready! {t('balelas')}</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
+    <div className="min-h-screen bg-fis-bg text-fis-text font-sans">
+      <Nav />
+      <main>
+        <Hero />
+        <FeaturesGrid />
+        <StepsGrid />
+        <XmlSection />
+        <PrivacySection />
+        <BrokersSection />
+        <CtaSection />
+      </main>
+      <Footer />
     </div>
   )
 }

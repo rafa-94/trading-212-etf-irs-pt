@@ -1,5 +1,135 @@
 {
   "test": {
     "balelas": "The Balelas"
+  },
+  "landing": {
+    "nav": {
+      "funcionalidades": "Features",
+      "como-funciona": "How it Works",
+      "privacidade": "Privacy",
+      "brokers": "Brokers",
+      "cta": "Start for Free"
+    },
+    "hero": {
+      "badge": "IRS DECLARATION 2024 · Model 3",
+      "title": "Your IRS filed with <em>surgical precision</em>",
+      "subtitle": "Upload your broker's CSV or Excel. Fiscus automatically calculates gains and losses from stocks, ETFs, dividends, interest and cryptocurrencies — and fills the AT annexes.",
+      "ctaPrimary": "Open Fiscus",
+      "ctaSecondary": "How it works",
+      "trust": {
+        "browser": "100% in Browser",
+        "privacy": "Private Data",
+        "fifo": "Automatic FIFO",
+        "free": "Free"
+      },
+      "uploadResult": "Results calculated",
+      "formats": "Stocks · ETFs · Dividends · Crypto",
+      "moreValuations": "Capital Gains",
+      "lessValuations": "Capital Losses",
+      "dividends": "Dividends",
+      "crypto": "Crypto (FIFO)"
+    },
+    "features": {
+      "tag": "FEATURES",
+      "title": "Everything you need to declare,<br />calculated automatically",
+      "subtitle": "Fiscus supports all types of capital income and capital gains required by the AT Model 3.",
+      "stocks": {
+        "title": "Stocks & ETFs",
+        "desc": "Automatic calculation of capital gains and losses using FIFO method. Purchase lots, dates, commissions and adjusted cost basis.",
+        "tags": ["FIFO", "Average Cost", "Commissions", "Lots"]
+      },
+      "dividends": {
+        "title": "Dividends",
+        "desc": "Complete list of all dividend payments with dates, gross values, withholding tax and country of origin.",
+        "tags": ["Withholding", "Country Origin", "Totals"]
+      },
+      "interest": {
+        "title": "Interest",
+        "desc": "Interest from bonds, deposits and savings accounts. Payment dates, rates applied and withholding already deducted by the broker.",
+        "tags": ["Bonds", "Deposits", "Savings"]
+      },
+      "crypto": {
+        "title": "Cryptocurrencies",
+        "desc": "Tracking of crypto purchases and sales with automatic FIFO application. Gains, losses, gas fees and conversions.",
+        "tags": ["Crypto FIFO", "Gas Fees", "Conversions", "DeFi"]
+      }
+    },
+    "howItWorks": {
+      "tag": "HOW IT WORKS",
+      "title": "In three steps,<br />your tax return ready",
+      "subtitle": "No installations, no account creation, no data sent to servers. All processing happens directly in your browser.",
+      "steps": [
+        {
+          "title": "Upload your file",
+          "desc": "Export the CSV or Excel from your broker — Interactive Brokers, DEGIRO, Trading212, Revolut, eToro and more. Or import the AT XML directly.",
+          "details": ["→ CSV, XLSX, XLS supported", "→ Multiple brokers at once", "→ Automatic format detection"]
+        },
+        {
+          "title": "The engine calculates",
+          "desc": "Fiscus automatically applies Portuguese tax rules: FIFO method, stock split treatment, accumulated interest and withholdings.",
+          "details": ["→ FIFO applied by ticker", "→ ETF-specific rules", "→ Consistency checks"]
+        },
+        {
+          "title": "Export for AT",
+          "desc": "View all calculated values and export the Modelo 3 XML ready to submit on the Portal das Finanças, with annexes J, E and G filled.",
+          "details": ["→ Annex J (Foreign)", "→ Annex E (Capital)", "→ Annex G (Capital Gains)"]
+        }
+      ]
+    },
+    "atIntegration": {
+      "badge": "✦ AT INTEGRATION",
+      "title": "Import the AT XML.<br />Fill the annexes.",
+      "subtitle": "Import the XML file you downloaded from the Portal das Finanças. Fiscus automatically fills all tables and fields of the annexes — no copy-paste needed.",
+      "features": [
+        " Annex J, Field 9 — foreign securities income",
+        " Annex E, Field 5 — dividends, interest and other capital income",
+        " Annex G, Field 9 — capital gains and losses on securities disposal",
+        " Automatic validation of NIF, IBAN and mandatory fields",
+        " Export of validated XML ready for tax filing"
+      ]
+    },
+    "privacy": {
+      "tag": "TOTAL PRIVACY",
+      "title": "Your data never<br />leaves your computer",
+      "subtitle": "Fiscus runs entirely in the browser. No files are sent to servers. No data is stored. Close the tab and everything disappears.",
+      "cards": {
+        "noServer": {
+          "title": "No server",
+          "desc": "All processing happens locally in your browser. Your files never leave your device."
+        },
+        "noAccount": {
+          "title": "No account",
+          "desc": "No need to create an account, or provide email or personal data. Open the browser and start using."
+        },
+        "noTracking": {
+          "title": "No tracking",
+          "desc": "No analytics cookies, no telemetry, no tracking. What you do in Fiscus is yours exclusively."
+        }
+      }
+    },
+    "brokers": {
+      "tag": "SUPPORTED BROKERS",
+      "title": "Compatible with the main<br />brokers used in Portugal",
+      "subtitle": "Don't find your broker? The generic CSV format accepts any export with date, ticker, quantity and price columns."
+    },
+    "cta": {
+      "tag": "GET STARTED",
+      "title": "Ready to file<br /><em>without headaches?</em>",
+      "subtitle": "Fiscus processes your files locally, applies Portuguese tax rules and generates XML for the AT. Free, private, in-browser.",
+      "uploadTitle": "Upload your files",
+      "uploadSubtitle": "CSV, XLSX, XLS or AT XML",
+      "cta": "Open Fiscus",
+      "note": "// No account · No installation · 100% local data · Free"
+    },
+    "footer": {
+      "copyright": "© 2024 Fiscus. Made in Portugal.",
+      "flag": "Built for Portuguese IRS",
+      "links": {
+        "privacy": "Privacy",
+        "terms": "Terms",
+        "support": "Support",
+        "github": "GitHub"
+      }
+    }
   }
 }

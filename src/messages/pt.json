@@ -1,5 +1,135 @@
 {
   "test": {
     "balelas": "O Balelas"
+  },
+  "landing": {
+    "nav": {
+      "funcionalidades": "Funcionalidades",
+      "como-funciona": "Como Funciona",
+      "privacidade": "Privacidade",
+      "brokers": "Brokers",
+      "cta": "Começar Grátis"
+    },
+    "hero": {
+      "badge": "DECLARAÇÃO IRS 2024 · Modelo 3",
+      "title": "O seu IRS declarado com <em>precisão cirúrgica</em>",
+      "subtitle": "Carregue o CSV ou Excel do seu broker. O Fiscus calcula automaticamente os ganhos e perdas de ações, ETFs, dividendos, juros e criptomoedas — e preenche os anexos da AT.",
+      "ctaPrimary": "Abrir o Fiscus",
+      "ctaSecondary": "Como funciona",
+      "trust": {
+        "browser": "100% no Browser",
+        "privacy": "Dados Privados",
+        "fifo": "FIFO Automático",
+        "free": "Gratuito"
+      },
+      "uploadResult": "Resultados calculados",
+      "formats": "Ações · ETFs · Dividendos · Crypto",
+      "moreValuations": "Mais-Valias",
+      "lessValuations": "Menos-Valias",
+      "dividends": "Dividendos",
+      "crypto": "Crypto (FIFO)"
+    },
+    "features": {
+      "tag": "FUNCIONALIDADES",
+      "title": "Tudo o que precisa de declarar,<br />calculado automaticamente",
+      "subtitle": "O Fiscus suporta todos os tipos de rendimentos de capitais e mais-valias exigidos pelo Modelo 3 da AT.",
+      "stocks": {
+        "title": "Ações & ETFs",
+        "desc": "Cálculo automático de mais e menos-valias com método FIFO. Lotes de compra, datas, comissões e custo de aquisição ajustado.",
+        "tags": ["FIFO", "Custo Médio", "Comissões", "Lotes"]
+      },
+      "dividends": {
+        "title": "Dividendos",
+        "desc": "Listagem completa de todos os pagamentos de dividendos com datas, valores brutos, retenção na fonte e país de origem.",
+        "tags": ["Ret. Fonte", "País Origem", "Totais"]
+      },
+      "interest": {
+        "title": "Juros",
+        "desc": "Juros de obrigações, depósitos e contas poupança. Datas de pagamento, taxas aplicadas e retenção já deduzida pelo broker.",
+        "tags": ["Obrigações", "Depósitos", "Poupança"]
+      },
+      "crypto": {
+        "title": "Criptomoedas",
+        "desc": "Rastreio de compras e vendas de cripto com aplicação automática de FIFO. Ganhos, perdas, taxas de gas e conversões.",
+        "tags": ["FIFO Crypto", "Gas Fees", "Conversões", "DeFi"]
+      }
+    },
+    "howItWorks": {
+      "tag": "COMO FUNCIONA",
+      "title": "Em três passos,<br />a declaração pronta",
+      "subtitle": "Sem instalações, sem criar conta, sem enviar dados para servidores. Todo o processamento acontece directamente no seu browser.",
+      "steps": [
+        {
+          "title": "Carregue o ficheiro",
+          "desc": "Exporte o CSV ou Excel do seu broker — Interactive Brokers, DEGIRO, Trading212, Revolut, eToro e mais. Ou importe directamente o XML da AT.",
+          "details": ["→ CSV, XLSX, XLS suportados", "→ Múltiplos brokers em simultâneo", "→ Detecção automática do formato"]
+        },
+        {
+          "title": "O motor calcula",
+          "desc": "O Fiscus aplica automaticamente as regras do IRS português: método FIFO, tratamento de split de ações, juros acumulados e retenções.",
+          "details": ["→ FIFO aplicado por ticker", "→ Regras específicas ETFs", "→ Verificação de consistência"]
+        },
+        {
+          "title": "Exporte para a AT",
+          "desc": "Visualize todos os valores calculados e exporte o XML do Modelo 3 pronto a submeter no Portal das Finanças, com os anexos J, E e G preenchidos.",
+          "details": ["→ Anexo J (Estrangeiro)", "→ Anexo E (Capitais)", "→ Anexo G (Mais-Valias)"]
+        }
+      ]
+    },
+    "atIntegration": {
+      "badge": "✦ INTEGRAÇÃO AT",
+      "title": "Importa o XML da AT.<br />Preenche os anexos.",
+      "subtitle": "Importe o ficheiro XML que descarregou do Portal das Finanças. O Fiscus preenche automaticamente todas as tabelas e quadros dos anexos — sem copiar e colar valores um a um.",
+      "features": [
+        "Quadro 9 do Anexo J — rendimentos de valores mobiliários no estrangeiro",
+        "Quadro 5 do Anexo E — dividendos, juros e outros rendimentos de capitais",
+        "Quadro 9 do Anexo G — mais e menos-valias de alienação de valores",
+        "Validação automática de NIF, IBAN e campos obrigatórios",
+        "Export do XML validado pronto a submeter na declaração"
+      ]
+    },
+    "privacy": {
+      "tag": "PRIVACIDADE TOTAL",
+      "title": "Os seus dados nunca<br />saem do seu computador",
+      "subtitle": "O Fiscus corre inteiramente no browser. Nenhum ficheiro é enviado para servidores. Nenhum dado é guardado. Feche a aba e tudo desaparece.",
+      "cards": {
+        "noServer": {
+          "title": "Sem servidor",
+          "desc": "Todo o processamento acontece localmente no seu browser. Os seus ficheiros nunca abandonam o seu dispositivo."
+        },
+        "noAccount": {
+          "title": "Sem conta",
+          "desc": "Não precisa de criar conta, nem de fornecer email ou qualquer dado pessoal. Abre o browser e começa a usar."
+        },
+        "noTracking": {
+          "title": "Sem rastreio",
+          "desc": "Sem cookies analíticos, sem telemetria, sem tracking. O que faz no Fiscus é exclusivamente seu."
+        }
+      }
+    },
+    "brokers": {
+      "tag": "BROKERS SUPORTADOS",
+      "title": "Compatível com os principais<br />brokers usados em Portugal",
+      "subtitle": "Não encontra o seu broker? O formato CSV genérico aceita qualquer exportação com colunas de data, ticker, quantidade e preço."
+    },
+    "cta": {
+      "tag": "COMECE AGORA",
+      "title": "Pronto para declarar<br /><em>sem dores de cabeça?</em>",
+      "subtitle": "O Fiscus processa os seus ficheiros localmente, aplica as regras do IRS português e gera o XML para a AT. Grátis, privado, no browser.",
+      "uploadTitle": "Carregue os seus ficheiros",
+      "uploadSubtitle": "CSV, XLSX, XLS ou XML da AT",
+      "cta": "Abrir o Fiscus",
+      "note": "// Sem conta · Sem instalação · Dados 100% locais · Grátis"
+    },
+    "footer": {
+      "copyright": "© 2024 Fiscus. Feito em Portugal.",
+      "flag": "Construído para o IRS português",
+      "links": {
+        "privacy": "Privacidade",
+        "terms": "Termos",
+        "support": "Suporte",
+        "github": "GitHub"
+      }
+    }
   }
 }

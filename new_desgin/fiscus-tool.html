@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiscus — Declaração IRS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07111E;
+  --surface: #0D1E30;
+  --card: #122134;
+  --card-hover: #172840;
+  --border: #1C3352;
+  --border-light: #234066;
+  --accent: #0DDFAA;
+  --accent-dim: rgba(13,223,170,0.12);
+  --accent-glow: rgba(13,223,170,0.07);
+  --gold: #F5A623;
+  --gold-dim: rgba(245,166,35,0.12);
+  --red: #EF7474;
+  --red-dim: rgba(239,116,116,0.12);
+  --blue: #5894FF;
+  --blue-dim: rgba(88,148,255,0.1);
+  --text: #E8F0F8;
+  --text-muted: #7B95B0;
+  --text-faint: #3D5A75;
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Plus Jakarta Sans', sans-serif;
+  --topbar-h: 54px;
+  --sidebar-w: 216px;
+  --r: 8px;
+  --r-lg: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--topbar-h);
+  background: rgba(7,17,30,0.97);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 300;
+  gap: 1rem;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-mark {
+  width: 26px; height: 26px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 14px; height: 14px; }
+.logo-text { font-family: var(--serif); font-weight: 700; font-size: 1rem; color: var(--text); letter-spacing: -0.02em; }
+
+.bar-divider { width: 1px; height: 18px; background: var(--border); }
+
+.year-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+.year-pill label { font-family: var(--mono); font-size: 0.65rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.year-pill select {
+  background: none; border: none; color: var(--accent);
+  font-family: var(--mono); font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; outline: none;
+}
+.year-pill select option { background: var(--card); color: var(--text); }
+
+.status-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 0.65rem;
+  color: var(--text-faint); letter-spacing: 0.05em;
+}
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-faint); }
+.status-dot.ready { background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.btn-top {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border);
+  background: var(--card); color: var(--text-muted);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  text-decoration: none;
+}
+.btn-top:hover { border-color: var(--border-light); color: var(--text); }
+.btn-top.gold { border-color: rgba(245,166,35,0.4); color: var(--gold); background: var(--gold-dim); }
+.btn-top.gold:hover { border-color: var(--gold); }
+.btn-top svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: var(--topbar-h); left: 0;
+  width: var(--sidebar-w);
+  height: calc(100vh - var(--topbar-h));
+  background: rgba(13,30,48,0.95);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 200;
+  padding: 1rem 0 2rem;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.nav-group { margin-bottom: 0.25rem; }
+.nav-group-label {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+  color: var(--text-faint); letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.75rem 1rem 0.4rem;
+  display: block;
+}
+
+.nav-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 1rem;
+  text-decoration: none;
+  color: var(--text-muted); font-size: 0.8rem;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-glow); }
+.nav-link svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.7; }
+.nav-link.active svg { opacity: 1; }
+
+.nav-sub {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 1rem 4px 2.25rem;
+  text-decoration: none;
+  color: var(--text-faint); font-size: 0.75rem;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+.nav-sub:hover { color: var(--text-muted); }
+.nav-sub.active { color: var(--accent); }
+
+.nav-sep { height: 1px; background: var(--border); margin: 0.5rem 1rem; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--topbar-h);
+  min-height: calc(100vh - var(--topbar-h));
+  padding: 0 0 4rem;
+  position: relative; z-index: 1;
+}
+
+/* ── SUMMARY BAR ── */
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.summary-item {
+  padding: 0.875rem 1.25rem;
+  border-right: 1px solid var(--border);
+}
+.summary-item:last-child { border-right: none; }
+.summary-label { font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+.summary-value { font-family: var(--mono); font-size: 1rem; font-weight: 600; }
+.summary-value.pos { color: var(--accent); }
+.summary-value.neg { color: var(--red); }
+.summary-value.gold { color: var(--gold); }
+.summary-value.blue { color: var(--blue); }
+.summary-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 1px; }
+
+/* ── SECTION ── */
+.section {
+  padding: 2rem 1.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: var(--topbar-h);
+}
+.section:last-child { border-bottom: none; }
+
+.section-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.5rem; gap: 1rem;
+}
+.section-title-block {}
+.section-tag {
+  font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px;
+}
+.section-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+.section-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+
+.section-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-top: 4px; }
+
+/* ── BTN ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px; font-size: 0.78rem; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border);
+  background: var(--card); color: var(--text-muted);
+  transition: all 0.15s;
+}
+.btn:hover { border-color: var(--border-light); color: var(--text); }
+.btn.accent { background: var(--accent); color: #07111E; border-color: transparent; font-weight: 600; }
+.btn.accent:hover { opacity: 0.88; }
+.btn.ghost { background: transparent; border-color: var(--border); }
+.btn svg { width: 12px; height: 12px; }
+
+/* ── BROKER UPLOAD ── */
+.broker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.broker-slot {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.broker-slot:hover { border-color: var(--border-light); }
+.broker-slot.has-file { border-color: rgba(13,223,170,0.35); }
+
+.broker-slot-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0.6rem 0.875rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.broker-name-input {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: var(--sans); font-size: 0.8rem; font-weight: 500;
+  color: var(--text); placeholder: var(--text-faint);
+}
+.broker-name-input::placeholder { color: var(--text-faint); }
+
+.broker-slot-badge {
+  font-family: var(--mono); font-size: 0.6rem; padding: 2px 7px;
+  border-radius: 4px; letter-spacing: 0.05em;
+}
+.badge-pending { background: var(--card-hover); color: var(--text-faint); border: 1px solid var(--border); }
+.badge-loading { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(245,166,35,0.3); }
+.badge-done { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(13,223,170,0.3); }
+.badge-error { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,116,116,0.3); }
+
+.broker-remove {
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; border: none; background: none; cursor: pointer;
+  color: var(--text-faint); transition: color 0.15s, background 0.15s;
+}
+.broker-remove:hover { color: var(--red); background: var(--red-dim); }
+.broker-remove svg { width: 11px; height: 11px; }
+
+.broker-drop {
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  min-height: 90px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  transition: background 0.2s;
+}
+.broker-drop:hover { background: rgba(255,255,255,0.02); }
+.broker-drop.dragover { background: var(--accent-glow); }
+
+.drop-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.drop-icon svg { width: 16px; height: 16px; }
+.drop-text { font-size: 0.75rem; color: var(--text-muted); }
+.drop-formats { font-family: var(--mono); font-size: 0.6rem; color: var(--text-faint); }
+
+.broker-file-info {
+  display: none; flex-direction: column; gap: 4px;
+  padding: 0.875rem 1rem;
+}
+.broker-slot.has-file .broker-drop { display: none; }
+.broker-slot.has-file .broker-file-info { display: flex; }
+.file-name { font-family: var(--mono); font-size: 0.72rem; color: var(--text); }
+.file-meta { font-size: 0.68rem; color: var(--text-faint); }
+.file-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  margin-top: 6px;
+}
+.file-stat { background: var(--surface); border-radius: 4px; padding: 4px 8px; }
+.file-stat-label { font-family: var(--mono); font-size: 0.58rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.file-stat-value { font-family: var(--mono); font-size: 0.75rem; font-weight: 600; color: var(--accent); }
+
+/* ── SUB SECTION (within data sections) ── */
+.sub-section { margin-bottom: 1.5rem; }
+.sub-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.6rem 0.875rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r) var(--r) 0 0;
+  cursor: pointer;
+}
+.sub-header:hover { background: var(--card); }
+.sub-title-row { display: flex; align-items: center; gap: 8px; }
+.sub-title { font-family: var(--sans); font-size: 0.82rem; font-weight: 600; color: var(--text); }
+.sub-count { font-family: var(--mono); font-size: 0.65rem; padding: 2px 7px; border-radius: 4px; background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(13,223,170,0.2); }
+.sub-total { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+.sub-total.pos { color: var(--accent); }
+.sub-total.neg { color: var(--red); }
+.sub-total.gold { color: var(--gold); }
+.chevron { width: 14px; height: 14px; color: var(--text-faint); transition: transform 0.2s; }
+.sub-section.collapsed .chevron { transform: rotate(-90deg); }
+.sub-body {
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--r) var(--r);
+  overflow: hidden;
+}
+.sub-section.collapsed .sub-body { display: none; }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.78rem;
+}
+thead th {
+  background: rgba(28,51,82,0.5);
+  padding: 7px 12px;
+  text-align: left;
+  font-family: var(--mono); font-size: 0.6rem;
+  color: var(--text-faint); font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+}
+thead th:first-child { padding-left: 1rem; }
+
+tbody tr {
+  border-bottom: 1px solid rgba(28,51,82,0.5);
+  transition: background 0.12s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+td {
+  padding: 7px 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+td:first-child { padding-left: 1rem; }
+td.ticker { font-family: var(--mono); font-size: 0.75rem; font-weight: 600; color: var(--text); }
+td.num { font-family: var(--mono); font-size: 0.75rem; text-align: right; }
+td.pos { color: var(--accent); }
+td.neg { color: var(--red); }
+td.gold-val { color: var(--accent); }
+td.date { font-family: var(--mono); font-size: 0.72rem; }
+td.country { font-family: var(--mono); font-size: 0.72rem; }
+td.isin { font-family: var(--mono); font-size: 0.68rem; color: var(--text-faint); }
+
+.tbl-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+}
+.tbl-empty-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.75rem;
+}
+.tbl-empty-icon svg { width: 18px; height: 18px; color: var(--text-faint); }
+.tbl-empty p { font-size: 0.8rem; color: var(--text-faint); }
+
+/* ── ANNEX ── */
+.annex-section { border-bottom: 1px solid var(--border); }
+
+.annex-header-bar {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.25rem 1.75rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.annex-code {
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 5px;
+  background: var(--gold-dim); color: var(--gold);
+  border: 1px solid rgba(245,166,35,0.3);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.annex-name { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.annex-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 1px; }
+.annex-totals { display: flex; gap: 0.75rem; margin-left: auto; flex-shrink: 0; }
+.annex-total-item { text-align: right; }
+.annex-total-label { font-family: var(--mono); font-size: 0.58rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.annex-total-value { font-family: var(--mono); font-size: 0.875rem; font-weight: 600; color: var(--text); }
+.annex-total-value.pos { color: var(--accent); }
+.annex-total-value.neg { color: var(--red); }
+.annex-total-value.gold { color: var(--gold); }
+
+.annex-body { padding: 1.25rem 1.75rem; }
+
+/* ── QUADRO ── */
+.quadro { margin-bottom: 1.5rem; }
+.quadro:last-child { margin-bottom: 0; }
+
+.quadro-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0.875rem;
+  background: rgba(28,51,82,0.3);
+  border: 1px solid var(--border);
+  border-radius: var(--r) var(--r) 0 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.quadro-header:hover { background: rgba(28,51,82,0.5); }
+.quadro-title-row { display: flex; align-items: center; gap: 8px; }
+.quadro-label {
+  font-family: var(--mono); font-size: 0.62rem;
+  padding: 2px 8px; border-radius: 4px;
+  background: var(--gold-dim); color: var(--gold);
+  border: 1px solid rgba(245,166,35,0.2);
+  letter-spacing: 0.06em;
+}
+.quadro-name { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+.quadro-desc { font-size: 0.72rem; color: var(--text-faint); }
+.quadro-meta { display: flex; align-items: center; gap: 8px; }
+.quadro-body {
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--r) var(--r); overflow: hidden;
+}
+.quadro.collapsed .quadro-body { display: none; }
+.quadro.collapsed .chevron { transform: rotate(-90deg); }
+
+/* ── XML MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(4,10,18,0.85);
+  z-index: 500;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+}
+.modal::-webkit-scrollbar { width: 3px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+}
+.modal-title-group {}
+.modal-badge {
+  font-family: var(--mono); font-size: 0.6rem; padding: 2px 8px;
+  border-radius: 4px; background: var(--gold-dim); color: var(--gold);
+  border: 1px solid rgba(245,166,35,0.3); letter-spacing: 0.06em;
+  margin-bottom: 4px; display: inline-block;
+}
+.modal-title { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.modal-close {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border); background: none;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.modal-close:hover { color: var(--text); border-color: var(--border-light); }
+.modal-close svg { width: 13px; height: 13px; }
+
+.modal-body { padding: 1.25rem 1.5rem; }
+
+.instructions-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
+.instruction-item { display: flex; gap: 10px; align-items: flex-start; }
+.instruction-num {
+  width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+  background: var(--gold-dim); border: 1px solid rgba(245,166,35,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600; color: var(--gold);
+  margin-top: 1px;
+}
+.instruction-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.55; }
+.instruction-text strong { color: var(--text); font-weight: 600; }
+.instruction-text code {
+  font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
+  background: var(--accent-dim); padding: 1px 5px; border-radius: 3px;
+}
+
+.modal-sep { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+.xml-upload-zone {
+  border: 2px dashed var(--border-light);
+  border-radius: var(--r-lg);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 1rem;
+}
+.xml-upload-zone:hover { border-color: var(--gold); background: var(--gold-dim); }
+.xml-upload-zone.has-file { border-color: rgba(13,223,170,0.4); background: var(--accent-glow); border-style: solid; }
+.xml-upload-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--gold-dim); border: 1px solid rgba(245,166,35,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.875rem;
+}
+.xml-upload-icon svg { width: 20px; height: 20px; }
+.xml-upload-title { font-weight: 600; font-size: 0.875rem; color: var(--text); margin-bottom: 3px; }
+.xml-upload-sub { font-size: 0.75rem; color: var(--text-muted); }
+.xml-upload-file { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); }
+
+.modal-actions { display: flex; gap: 8px; }
+.modal-actions .btn { flex: 1; justify-content: center; padding: 8px 12px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── TOAST ── */
+.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 0.8rem; color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: slideIn 0.2s ease;
+}
+.toast.success { border-color: rgba(13,223,170,0.3); }
+.toast-icon { width: 16px; height: 16px; flex-shrink: 0; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 14 14" fill="none">
+          <path d="M2 11L7 3L12 11H2Z" fill="#07111E"/>
+          <path d="M1.5 10.5H12.5M7 3v.5M4 8.5H10" stroke="#07111E" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-text">Fiscus</span>
+    </a>
+    <div class="bar-divider"></div>
+    <div class="year-pill">
+      <label>Ano Fiscal</label>
+      <select id="fiscalYear">
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+      </select>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot ready"></span>
+      <span>2 brokers importados</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-top" onclick="openPDF()">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1" width="9" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5h5M4 7.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Instruções IRS
+    </button>
+    <button class="btn-top gold" onclick="openXmlModal()">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M4.5 4.5L2 6.5l2.5 2M8.5 4.5L11 6.5l-2.5 2M7 3l-1.5 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Portal AT / XML
+    </button>
+  </div>
+</header>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="nav-group">
+    <span class="nav-group-label">Ficheiros</span>
+    <a class="nav-link active" onclick="scrollTo('sec-upload')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 5v4M4.5 6.5L6.5 5l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Brokers
+    </a>
+  </div>
+
+  <div class="nav-sep"></div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Dados Processados</span>
+    <a class="nav-link" onclick="scrollTo('sec-trades')">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M2 9.5L5 6l3 2 3-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Trades
+    </a>
+    <a class="nav-sub" onclick="scrollTo('sub-acoes')">↳ Ações & ETFs</a>
+    <a class="nav-sub" onclick="scrollTo('sub-crypto')">↳ Criptomoedas</a>
+    <a class="nav-link" onclick="scrollTo('sec-dividendos')">
+      <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 4v1.5l1 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Dividendos
+    </a>
+    <a class="nav-sub" onclick="scrollTo('sub-div-nac')">↳ Nacionais</a>
+    <a class="nav-sub" onclick="scrollTo('sub-div-ext')">↳ Estrangeiros</a>
+    <a class="nav-link" onclick="scrollTo('sec-juros')">
+      <svg viewBox="0 0 13 13" fill="none"><path d="M2 10L5.5 3.5h1L7 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 7.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 3.5c.5.5 1.5 1.5 0 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Juros
+    </a>
+    <a class="nav-sub" onclick="scrollTo('sub-juros-obg')">↳ Obrigações</a>
+    <a class="nav-sub" onclick="scrollTo('sub-juros-dep')">↳ Depósitos</a>
+  </div>
+
+  <div class="nav-sep"></div>
+
+  <div class="nav-group">
+    <span class="nav-group-label">Anexos IRS</span>
+    <a class="nav-link" onclick="scrollTo('sec-anexo-e')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1.5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Anexo E
+    </a>
+    <a class="nav-sub" onclick="scrollTo('q-e4')">↳ Quadro 4</a>
+    <a class="nav-sub" onclick="scrollTo('q-e5')">↳ Quadro 5</a>
+    <a class="nav-link" onclick="scrollTo('sec-anexo-g')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1.5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Anexo G
+    </a>
+    <a class="nav-sub" onclick="scrollTo('q-g4')">↳ Quadro 4</a>
+    <a class="nav-sub" onclick="scrollTo('q-g9')">↳ Quadro 9</a>
+    <a class="nav-link" onclick="scrollTo('sec-anexo-g1')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1.5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Anexo G1
+    </a>
+    <a class="nav-sub" onclick="scrollTo('q-g1-8')">↳ Quadro 8</a>
+    <a class="nav-link" onclick="scrollTo('sec-anexo-h')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1.5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Anexo H
+    </a>
+    <a class="nav-sub" onclick="scrollTo('q-h6a')">↳ Quadro 6A</a>
+    <a class="nav-sub" onclick="scrollTo('q-h7')">↳ Quadro 7</a>
+    <a class="nav-link" onclick="scrollTo('sec-anexo-j')">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="2" y="1.5" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4.5h5M4 6.5h5M4 8.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Anexo J
+    </a>
+    <a class="nav-sub" onclick="scrollTo('q-j8')">↳ Quadro 8</a>
+    <a class="nav-sub" onclick="scrollTo('q-j9')">↳ Quadro 9</a>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- SUMMARY BAR -->
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="summary-label">Mais-Valias</div>
+      <div class="summary-value pos">+€4.521,40</div>
+      <div class="summary-sub">Ações · ETFs · Crypto</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Menos-Valias</div>
+      <div class="summary-value neg">-€891,30</div>
+      <div class="summary-sub">6 operações</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Dividendos</div>
+      <div class="summary-value blue">€1.248,60</div>
+      <div class="summary-sub">Ret. fonte · €187,29</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Juros</div>
+      <div class="summary-value blue">€312,45</div>
+      <div class="summary-sub">Obrigações · Depósitos</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Despesas</div>
+      <div class="summary-value gold">-€21,20</div>
+      <div class="summary-sub">Comissões · Taxas</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Resultado Líquido</div>
+      <div class="summary-value pos">+€5.168,95</div>
+      <div class="summary-sub">28% IRS · ~€1.447,31</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════ UPLOAD ════════════════════════════ -->
+  <section class="section" id="sec-upload">
+    <div class="section-header">
+      <div class="section-title-block">
+        <div class="section-tag">// FICHEIROS · BROKERS</div>
+        <div class="section-title">Importar ficheiros</div>
+        <div class="section-desc">Adicione um slot por broker. O Fiscus detecta o formato e processa automaticamente.</div>
+      </div>
+      <div class="section-actions">
+        <button class="btn" onclick="addBrokerSlot()">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Adicionar Broker
+        </button>
+      </div>
+    </div>
+    <div class="broker-grid" id="brokerGrid">
+      <!-- Slot 1 — DEGIRO (has file) -->
+      <div class="broker-slot has-file" id="slot-0">
+        <div class="broker-slot-header">
+          <input type="text" class="broker-name-input" value="DEGIRO" placeholder="Nome do broker">
+          <span class="broker-slot-badge badge-done">Processado</span>
+          <button class="broker-remove" onclick="removeSlot('slot-0')">
+            <svg viewBox="0 0 11 11" fill="none"><path d="M2 2l7 7M9 2L2 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="broker-drop" ondragover="handleDragOver(event,this)" ondragleave="handleDragLeave(event,this)" ondrop="handleDrop(event,this.closest('.broker-slot'))">
+          <div class="drop-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 7l3-3 3 3" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="drop-text">Arraste o ficheiro</div>
+          <div class="drop-formats">CSV · XLSX · XLS</div>
+        </div>
+        <div class="broker-file-info">
+          <div class="file-name">Portfolio_2024_DEGIRO.csv</div>
+          <div class="file-meta">Importado · 14 Jan 2025 · 48 KB</div>
+          <div class="file-stats">
+            <div class="file-stat"><div class="file-stat-label">Trades</div><div class="file-stat-value">34</div></div>
+            <div class="file-stat"><div class="file-stat-label">Dividendos</div><div class="file-stat-value">8</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Slot 2 — IBKR (has file) -->
+      <div class="broker-slot has-file" id="slot-1">
+        <div class="broker-slot-header">
+          <input type="text" class="broker-name-input" value="Interactive Brokers" placeholder="Nome do broker">
+          <span class="broker-slot-badge badge-done">Processado</span>
+          <button class="broker-remove" onclick="removeSlot('slot-1')">
+            <svg viewBox="0 0 11 11" fill="none"><path d="M2 2l7 7M9 2L2 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="broker-drop" ondragover="handleDragOver(event,this)" ondragleave="handleDragLeave(event,this)" ondrop="handleDrop(event,this.closest('.broker-slot'))">
+          <div class="drop-icon"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 7l3-3 3 3" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          <div class="drop-text">Arraste o ficheiro</div>
+          <div class="drop-formats">CSV · XLSX · XLS</div>
+        </div>
+        <div class="broker-file-info">
+          <div class="file-name">U1234567_Activity_2024.csv</div>
+          <div class="file-meta">Importado · 14 Jan 2025 · 124 KB</div>
+          <div class="file-stats">
+            <div class="file-stat"><div class="file-stat-label">Trades</div><div class="file-stat-value">67</div></div>
+            <div class="file-stat"><div class="file-stat-label">Juros</div><div class="file-stat-value">12</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ TRADES ════════════════════════════ -->
+  <section class="section" id="sec-trades">
+    <div class="section-header">
+      <div class="section-title-block">
+        <div class="section-tag">// DADOS · TRADES</div>
+        <div class="section-title">Trades</div>
+        <div class="section-desc">Operações de compra e venda com cálculo automático de FIFO e mais/menos-valias.</div>
+      </div>
+      <div class="section-actions">
+        <button class="btn ghost">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M3.5 6h5M5 9h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Filtrar
+        </button>
+        <button class="btn ghost">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 9.5L5 5l2.5 2L10 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub: Ações & ETFs -->
+    <div class="sub-section" id="sub-acoes">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Ações & ETFs</span>
+          <span class="sub-count">8 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">+€3.630,10</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th><th>Nome</th><th>ISIN</th>
+                <th>Data Compra</th><th>Qtd.</th><th>PU Compra</th>
+                <th>Data Venda</th><th>PU Venda</th>
+                <th>Comissões</th><th>MV / mv</th><th>Broker</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">VWCE.DE</td><td>Vanguard FTSE All-World</td><td class="isin">IE00B3RBWM25</td>
+                <td class="date">12 Jan 2024</td><td class="num">15</td><td class="num">94,42</td>
+                <td class="date">28 Out 2024</td><td class="num">118,60</td>
+                <td class="num">3,90</td><td class="num pos">+€358,80</td><td>DEGIRO</td>
+              </tr>
+              <tr>
+                <td class="ticker">MSFT</td><td>Microsoft Corp.</td><td class="isin">US5949181045</td>
+                <td class="date">03 Mar 2023</td><td class="num">8</td><td class="num">268,10</td>
+                <td class="date">15 Jun 2024</td><td class="num">420,44</td>
+                <td class="num">5,60</td><td class="num pos">+€1.213,36</td><td>IBKR</td>
+              </tr>
+              <tr>
+                <td class="ticker">AAPL</td><td>Apple Inc.</td><td class="isin">US0378331005</td>
+                <td class="date">10 Fev 2024</td><td class="num">10</td><td class="num">182,32</td>
+                <td class="date">30 Set 2024</td><td class="num">223,45</td>
+                <td class="num">4,20</td><td class="num pos">+€407,10</td><td>IBKR</td>
+              </tr>
+              <tr>
+                <td class="ticker">INTC</td><td>Intel Corp.</td><td class="isin">US4581401001</td>
+                <td class="date">22 Abr 2022</td><td class="num">20</td><td class="num">44,10</td>
+                <td class="date">02 Mai 2024</td><td class="num">31,20</td>
+                <td class="num">3,50</td><td class="num neg">-€261,50</td><td>DEGIRO</td>
+              </tr>
+              <tr>
+                <td class="ticker">SWRD.L</td><td>SPDR MSCI World</td><td class="isin">IE00BFY0GT14</td>
+                <td class="date">05 Jan 2024</td><td class="num">25</td><td class="num">36,78</td>
+                <td class="date">20 Nov 2024</td><td class="num">48,92</td>
+                <td class="num">4,10</td><td class="num pos">+€299,50</td><td>DEGIRO</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub: Criptomoedas -->
+    <div class="sub-section" id="sub-crypto">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Criptomoedas</span>
+          <span class="sub-count">5 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">+€891,30</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ativo</th><th>Data Compra</th><th>Qtd.</th><th>Custo (€)</th>
+                <th>Data Venda</th><th>Valor Venda (€)</th><th>Taxas (€)</th>
+                <th>MV / mv</th><th>Broker</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">BTC</td>
+                <td class="date">10 Jan 2023</td><td class="num">0,05</td><td class="num">1.120,00</td>
+                <td class="date">15 Mar 2024</td><td class="num">2.340,00</td>
+                <td class="num">18,40</td><td class="num pos">+€1.201,60</td><td>Coinbase</td>
+              </tr>
+              <tr>
+                <td class="ticker">ETH</td>
+                <td class="date">22 Jun 2023</td><td class="num">0,3</td><td class="num">560,00</td>
+                <td class="date">08 Ago 2024</td><td class="num">870,00</td>
+                <td class="num">12,20</td><td class="num pos">+€297,80</td><td>Coinbase</td>
+              </tr>
+              <tr>
+                <td class="ticker">SOL</td>
+                <td class="date">04 Dez 2023</td><td class="num">5</td><td class="num">420,00</td>
+                <td class="date">12 Jan 2024</td><td class="num">612,00</td>
+                <td class="num">8,50</td><td class="num neg">-€388,00</td><td>Binance</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ DIVIDENDOS ════════════════════════ -->
+  <section class="section" id="sec-dividendos">
+    <div class="section-header">
+      <div class="section-title-block">
+        <div class="section-tag">// DADOS · DIVIDENDOS</div>
+        <div class="section-title">Dividendos</div>
+        <div class="section-desc">Todos os dividendos recebidos com datas, retenções na fonte e país de origem.</div>
+      </div>
+      <div class="section-actions">
+        <button class="btn ghost">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 9.5L5 5l2.5 2L10 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub: Nacionais -->
+    <div class="sub-section" id="sub-div-nac">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Nacionais</span>
+          <span class="sub-count">2 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">€124,30</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Empresa</th><th>ISIN</th><th>Data Pgmt.</th><th>Valor Bruto (€)</th><th>Taxa Ret.</th><th>Ret. Fonte (€)</th><th>Valor Líquido (€)</th><th>Broker</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">EDP</td><td class="isin">PTEDP0AM0009</td>
+                <td class="date">18 Abr 2024</td>
+                <td class="num gold-val">82,40</td><td class="num">28%</td>
+                <td class="num">23,07</td><td class="num">59,33</td><td>DEGIRO</td>
+              </tr>
+              <tr>
+                <td class="ticker">NOS</td><td class="isin">PTNOS0AM0001</td>
+                <td class="date">25 Jul 2024</td>
+                <td class="num gold-val">41,90</td><td class="num">28%</td>
+                <td class="num">11,73</td><td class="num">30,17</td><td>DEGIRO</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub: Estrangeiros -->
+    <div class="sub-section" id="sub-div-ext">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Estrangeiros</span>
+          <span class="sub-count">6 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">€1.124,30</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Empresa/Fundo</th><th>ISIN</th><th>País</th><th>Data Pgmt.</th><th>Valor Bruto (€)</th><th>Taxa Ret.</th><th>Ret. Fonte (€)</th><th>Broker</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">MSFT</td><td class="isin">US5949181045</td>
+                <td class="country">US</td><td class="date">08 Mar 2024</td>
+                <td class="num gold-val">184,20</td><td class="num">15%</td><td class="num">27,63</td><td>IBKR</td>
+              </tr>
+              <tr>
+                <td class="ticker">AAPL</td><td class="isin">US0378331005</td>
+                <td class="country">US</td><td class="date">15 Mai 2024</td>
+                <td class="num gold-val">96,40</td><td class="num">15%</td><td class="num">14,46</td><td>IBKR</td>
+              </tr>
+              <tr>
+                <td class="ticker">VWCE.DE</td><td class="isin">IE00B3RBWM25</td>
+                <td class="country">IE</td><td class="date">22 Jun 2024</td>
+                <td class="num gold-val">312,80</td><td class="num">0%</td><td class="num">0,00</td><td>DEGIRO</td>
+              </tr>
+              <tr>
+                <td class="ticker">JNJ</td><td class="isin">US4781601046</td>
+                <td class="country">US</td><td class="date">04 Set 2024</td>
+                <td class="num gold-val">145,60</td><td class="num">15%</td><td class="num">21,84</td><td>IBKR</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ JUROS ════════════════════════════ -->
+  <section class="section" id="sec-juros">
+    <div class="section-header">
+      <div class="section-title-block">
+        <div class="section-tag">// DADOS · JUROS</div>
+        <div class="section-title">Juros</div>
+        <div class="section-desc">Juros de obrigações e depósitos recebidos durante o ano fiscal.</div>
+      </div>
+    </div>
+
+    <!-- Sub: Obrigações -->
+    <div class="sub-section" id="sub-juros-obg">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Obrigações</span>
+          <span class="sub-count">3 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">€248,90</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Título</th><th>ISIN</th><th>Data Pgmt.</th><th>Valor Bruto (€)</th><th>Taxa Ret.</th><th>Ret. Fonte (€)</th><th>Valor Líquido (€)</th><th>Broker</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">OT 2.125% 2033</td><td class="isin">PTOTEZOE0025</td>
+                <td class="date">15 Jan 2024</td>
+                <td class="num gold-val">106,25</td><td class="num">28%</td><td class="num">29,75</td><td class="num">76,50</td><td>IBKR</td>
+              </tr>
+              <tr>
+                <td class="ticker">iShares € Corp Bond</td><td class="isin">IE0032895942</td>
+                <td class="date">30 Jun 2024</td>
+                <td class="num gold-val">142,65</td><td class="num">0%</td><td class="num">0,00</td><td class="num">142,65</td><td>DEGIRO</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub: Depósitos -->
+    <div class="sub-section" id="sub-juros-dep">
+      <div class="sub-header" onclick="toggleSub(this)">
+        <div class="sub-title-row">
+          <span class="sub-title">Depósitos & Poupança</span>
+          <span class="sub-count">2 linhas</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="sub-total pos">€63,55</span>
+          <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="sub-body">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Instrumento</th><th>Data</th><th>Valor Bruto (€)</th><th>Taxa</th><th>Ret. Fonte (€)</th><th>Valor Líquido (€)</th><th>Banco</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ticker">Depósito a Prazo 6M</td>
+                <td class="date">30 Jun 2024</td>
+                <td class="num gold-val">44,80</td><td class="num">3,5%</td><td class="num">12,54</td><td class="num">32,26</td><td>Revolut</td>
+              </tr>
+              <tr>
+                <td class="ticker">Conta Poupança</td>
+                <td class="date">31 Dez 2024</td>
+                <td class="num gold-val">18,75</td><td class="num">2,1%</td><td class="num">5,25</td><td class="num">13,50</td><td>Revolut</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════ ANEXO E ════════════════════════════ -->
+  <div class="annex-section" id="sec-anexo-e">
+    <div class="annex-header-bar">
+      <span class="annex-code">ANEXO E</span>
+      <div>
+        <div class="annex-name">Rendimentos de Capitais</div>
+        <div class="annex-desc">Dividendos, juros e outros rendimentos de capitais nacionais e estrangeiros</div>
+      </div>
+      <div class="annex-totals">
+        <div class="annex-total-item">
+          <div class="annex-total-label">Total Rendimentos</div>
+          <div class="annex-total-value pos">€1.560,75</div>
+        </div>
+        <div class="annex-total-item">
+          <div class="annex-total-label">Imp. Retido</div>
+          <div class="annex-total-value">€187,29</div>
+        </div>
+      </div>
+    </div>
+    <div class="annex-body">
+      <!-- Quadro 4 -->
+      <div class="quadro" id="q-e4">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 4</span>
+            <span class="quadro-name">Rendimentos obtidos em Portugal</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">€124,30 · 2 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Titular (NIF)</th><th>NIF Entidade</th><th>Designação</th><th>Valor (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="ticker">E21</td><td class="num">123456789</td><td class="isin">500697370</td><td>EDP — Dividendos 2024</td><td class="num gold-val">82,40</td></tr>
+                <tr><td class="ticker">E21</td><td class="num">123456789</td><td class="isin">500159613</td><td>NOS — Dividendos 2024</td><td class="num gold-val">41,90</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Quadro 5 -->
+      <div class="quadro" id="q-e5">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 5</span>
+            <span class="quadro-name">Rendimentos obtidos no Estrangeiro</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">€1.436,45 · 6 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Titular (NIF)</th><th>País</th><th>Designação</th><th>Rendimento (€)</th><th>Imp. Retido (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="ticker">E24</td><td class="num">123456789</td><td class="country">US</td><td>Microsoft Corp. — Dividendos</td><td class="num gold-val">184,20</td><td class="num">27,63</td></tr>
+                <tr><td class="ticker">E24</td><td class="num">123456789</td><td class="country">US</td><td>Apple Inc. — Dividendos</td><td class="num gold-val">96,40</td><td class="num">14,46</td></tr>
+                <tr><td class="ticker">E24</td><td class="num">123456789</td><td class="country">IE</td><td>Vanguard FTSE All-World — Dist.</td><td class="num gold-val">312,80</td><td class="num">0,00</td></tr>
+                <tr><td class="ticker">E24</td><td class="num">123456789</td><td class="country">US</td><td>Johnson & Johnson — Dividendos</td><td class="num gold-val">145,60</td><td class="num">21,84</td></tr>
+                <tr><td class="ticker">E26</td><td class="num">123456789</td><td class="country">PT</td><td>OT 2.125% 2033 — Juros</td><td class="num gold-val">106,25</td><td class="num">29,75</td></tr>
+                <tr><td class="ticker">E24</td><td class="num">123456789</td><td class="country">IE</td><td>iShares € Corp Bond — Juros</td><td class="num gold-val">142,65</td><td class="num">0,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════ ANEXO G ════════════════════════════ -->
+  <div class="annex-section" id="sec-anexo-g">
+    <div class="annex-header-bar">
+      <span class="annex-code">ANEXO G</span>
+      <div>
+        <div class="annex-name">Mais-Valias e outros Incrementos Patrimoniais</div>
+        <div class="annex-desc">Alienação de valores mobiliários, quotas e outros direitos</div>
+      </div>
+      <div class="annex-totals">
+        <div class="annex-total-item">
+          <div class="annex-total-label">Mais-Valias</div>
+          <div class="annex-total-value pos">+€3.630,10</div>
+        </div>
+        <div class="annex-total-item">
+          <div class="annex-total-label">Menos-Valias</div>
+          <div class="annex-total-value neg">-€261,50</div>
+        </div>
+      </div>
+    </div>
+    <div class="annex-body">
+      <div class="quadro" id="q-g4">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 4</span>
+            <span class="quadro-name">Alienação de partes sociais e outros valores mobiliários</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">€3.368,60 líquido · 4 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Titular (NIF)</th><th>País</th><th>Data Realiz.</th><th>Valor Realiz. (€)</th><th>Data Aquis.</th><th>Valor Aquis. (€)</th><th>Despesas (€)</th><th>MV / mv (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="ticker">G20</td><td class="num">123456789</td><td class="country">DE</td><td class="date">28 Out 2024</td><td class="num">1.779,00</td><td class="date">12 Jan 2024</td><td class="num">1.416,30</td><td class="num">3,90</td><td class="num pos">+358,80</td></tr>
+                <tr><td class="ticker">G20</td><td class="num">123456789</td><td class="country">US</td><td class="date">15 Jun 2024</td><td class="num">3.363,52</td><td class="date">03 Mar 2023</td><td class="num">2.144,80</td><td class="num">5,60</td><td class="num pos">+1.213,12</td></tr>
+                <tr><td class="ticker">G20</td><td class="num">123456789</td><td class="country">US</td><td class="date">30 Set 2024</td><td class="num">2.234,50</td><td class="date">10 Fev 2024</td><td class="num">1.823,20</td><td class="num">4,20</td><td class="num pos">+407,10</td></tr>
+                <tr><td class="ticker">G20</td><td class="num">123456789</td><td class="country">US</td><td class="date">02 Mai 2024</td><td class="num">624,00</td><td class="date">22 Abr 2022</td><td class="num">882,00</td><td class="num">3,50</td><td class="num neg">-261,50</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="quadro" id="q-g9">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 9</span>
+            <span class="quadro-name">Mais-valias sujeitas a englobamento</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">0 linhas — sem opção de englobamento</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-empty">
+            <div class="tbl-empty-icon"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M9 6v3l2 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+            <p>Nenhuma operação sujeita a englobamento para 2024</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════ ANEXO G1 ════════════════════════════ -->
+  <div class="annex-section" id="sec-anexo-g1">
+    <div class="annex-header-bar">
+      <span class="annex-code">ANEXO G1</span>
+      <div>
+        <div class="annex-name">Mais-Valias não tributadas</div>
+        <div class="annex-desc">Valores mobiliários adquiridos antes de 01/01/1989 ou com isenção específica</div>
+      </div>
+      <div class="annex-totals">
+        <div class="annex-total-item">
+          <div class="annex-total-label">Mais-Valias Crypto</div>
+          <div class="annex-total-value pos">+€891,30</div>
+        </div>
+      </div>
+    </div>
+    <div class="annex-body">
+      <div class="quadro" id="q-g1-8">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 8</span>
+            <span class="quadro-name">Alienação de criptoativos</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">€891,30 · 3 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Código</th><th>Titular (NIF)</th><th>Denominação</th><th>Data Realiz.</th><th>Valor Realiz. (€)</th><th>Data Aquis.</th><th>Valor Aquis. (€)</th><th>Despesas (€)</th><th>MV / mv (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="ticker">G57</td><td class="num">123456789</td><td>Bitcoin (BTC)</td><td class="date">15 Mar 2024</td><td class="num">2.340,00</td><td class="date">10 Jan 2023</td><td class="num">1.120,00</td><td class="num">18,40</td><td class="num pos">+1.201,60</td></tr>
+                <tr><td class="ticker">G57</td><td class="num">123456789</td><td>Ethereum (ETH)</td><td class="date">08 Ago 2024</td><td class="num">870,00</td><td class="date">22 Jun 2023</td><td class="num">560,00</td><td class="num">12,20</td><td class="num pos">+297,80</td></tr>
+                <tr><td class="ticker">G57</td><td class="num">123456789</td><td>Solana (SOL)</td><td class="date">12 Jan 2024</td><td class="num">612,00</td><td class="date">04 Dez 2023</td><td class="num">420,00</td><td class="num">8,50</td><td class="num neg">-388,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════ ANEXO H ════════════════════════════ -->
+  <div class="annex-section" id="sec-anexo-h">
+    <div class="annex-header-bar">
+      <span class="annex-code">ANEXO H</span>
+      <div>
+        <div class="annex-name">Benefícios Fiscais e Deduções</div>
+        <div class="annex-desc">Deduções à coleta e benefícios fiscais específicos</div>
+      </div>
+      <div class="annex-totals">
+        <div class="annex-total-item">
+          <div class="annex-total-label">Total Deduções</div>
+          <div class="annex-total-value">€0,00</div>
+        </div>
+      </div>
+    </div>
+    <div class="annex-body">
+      <div class="quadro" id="q-h6a">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 6A</span>
+            <span class="quadro-name">Encargos com habitação permanente</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">0 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-empty">
+            <div class="tbl-empty-icon"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2L2 8v8h5v-4h4v4h5V8L9 2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+            <p>Sem encargos com habitação detetados nos ficheiros importados</p>
+          </div>
+        </div>
+      </div>
+      <div class="quadro" id="q-h7">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 7</span>
+            <span class="quadro-name">Outros benefícios fiscais</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">0 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-empty">
+            <div class="tbl-empty-icon"><svg viewBox="0 0 18 18" fill="none"><path d="M9 3l1.8 3.6L15 7.3l-3 2.9.7 4.1L9 12.1l-3.7 2.2.7-4.1-3-2.9 4.2-.7L9 3Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+            <p>Sem benefícios fiscais detetados para 2024</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════ ANEXO J ════════════════════════════ -->
+  <div class="annex-section" id="sec-anexo-j">
+    <div class="annex-header-bar">
+      <span class="annex-code">ANEXO J</span>
+      <div>
+        <div class="annex-name">Rendimentos Obtidos no Estrangeiro</div>
+        <div class="annex-desc">Rendimentos de capitais, mais-valias e outros rendimentos de fonte estrangeira</div>
+      </div>
+      <div class="annex-totals">
+        <div class="annex-total-item">
+          <div class="annex-total-label">Cap. Estrangeiros</div>
+          <div class="annex-total-value pos">€1.436,45</div>
+        </div>
+        <div class="annex-total-item">
+          <div class="annex-total-label">MV Estrangeiras</div>
+          <div class="annex-total-value pos">+€3.368,60</div>
+        </div>
+      </div>
+    </div>
+    <div class="annex-body">
+      <div class="quadro" id="q-j8">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 8</span>
+            <span class="quadro-name">Rendimentos de capitais (dividendos, juros) — Estrangeiro</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">€1.436,45 · 6 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>País</th><th>Código</th><th>Titular (NIF)</th><th>Designação</th><th>Rendimento Bruto (€)</th><th>Imp. Pago Estrang. (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="country">US</td><td class="ticker">J02</td><td class="num">123456789</td><td>Microsoft Corp. — Dividendos</td><td class="num gold-val">184,20</td><td class="num">27,63</td></tr>
+                <tr><td class="country">US</td><td class="ticker">J02</td><td class="num">123456789</td><td>Apple Inc. — Dividendos</td><td class="num gold-val">96,40</td><td class="num">14,46</td></tr>
+                <tr><td class="country">IE</td><td class="ticker">J02</td><td class="num">123456789</td><td>Vanguard FTSE All-World</td><td class="num gold-val">312,80</td><td class="num">0,00</td></tr>
+                <tr><td class="country">US</td><td class="ticker">J02</td><td class="num">123456789</td><td>Johnson & Johnson — Dividendos</td><td class="num gold-val">145,60</td><td class="num">21,84</td></tr>
+                <tr><td class="country">IE</td><td class="ticker">J05</td><td class="num">123456789</td><td>iShares € Corp Bond — Juros</td><td class="num gold-val">142,65</td><td class="num">0,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="quadro" id="q-j9">
+        <div class="quadro-header" onclick="toggleQuadro(this)">
+          <div class="quadro-title-row">
+            <span class="quadro-label">Quadro 9</span>
+            <span class="quadro-name">Mais-valias — Alienação de valores mobiliários estrangeiros</span>
+          </div>
+          <div class="quadro-meta">
+            <span class="quadro-desc">+€3.368,60 líquido · 4 linhas</span>
+            <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="quadro-body">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>País</th><th>Código</th><th>Titular (NIF)</th><th>Data Realiz.</th><th>Valor Realiz. (€)</th><th>Data Aquis.</th><th>Valor Aquis. (€)</th><th>Despesas (€)</th><th>MV / mv (€)</th></tr></thead>
+              <tbody>
+                <tr><td class="country">DE</td><td class="ticker">J31</td><td class="num">123456789</td><td class="date">28 Out 2024</td><td class="num">1.779,00</td><td class="date">12 Jan 2024</td><td class="num">1.416,30</td><td class="num">3,90</td><td class="num pos">+358,80</td></tr>
+                <tr><td class="country">US</td><td class="ticker">J31</td><td class="num">123456789</td><td class="date">15 Jun 2024</td><td class="num">3.363,52</td><td class="date">03 Mar 2023</td><td class="num">2.144,80</td><td class="num">5,60</td><td class="num pos">+1.213,12</td></tr>
+                <tr><td class="country">US</td><td class="ticker">J31</td><td class="num">123456789</td><td class="date">30 Set 2024</td><td class="num">2.234,50</td><td class="date">10 Fev 2024</td><td class="num">1.823,20</td><td class="num">4,20</td><td class="num pos">+407,10</td></tr>
+                <tr><td class="country">US</td><td class="ticker">J31</td><td class="num">123456789</td><td class="date">02 Mai 2024</td><td class="num">624,00</td><td class="date">22 Abr 2022</td><td class="num">882,00</td><td class="num">3,50</td><td class="num neg">-261,50</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ════════════════════════════ XML MODAL ════════════════════════════ -->
+<div class="modal-overlay" id="xmlModal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-badge">PORTAL AT · XML</div>
+        <div class="modal-title">Importar & Exportar Declaração XML</div>
+      </div>
+      <button class="modal-close" onclick="closeXmlModal()">
+        <svg viewBox="0 0 13 13" fill="none"><path d="M2 2l9 9M11 2L2 11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6;">Para preencher automaticamente os anexos da sua declaração, descarregue o ficheiro XML do Portal das Finanças e importe-o aqui.</p>
+
+      <ul class="instructions-list">
+        <li class="instruction-item">
+          <span class="instruction-num">1</span>
+          <span class="instruction-text">Aceda ao <strong>Portal das Finanças</strong> em <code>portaldasfinancas.gov.pt</code> e autentique-se com o NIF e senha.</span>
+        </li>
+        <li class="instruction-item">
+          <span class="instruction-num">2</span>
+          <span class="instruction-text">No menu, vá a <strong>Cidadãos → Entregar → IRS</strong> e selecione o ano fiscal <strong>2024</strong>.</span>
+        </li>
+        <li class="instruction-item">
+          <span class="instruction-num">3</span>
+          <span class="instruction-text">Escolha <strong>"Editar declaração anterior"</strong> ou inicie uma nova. Clique em <strong>"Guardar"</strong> e depois em <strong>"Exportar XML"</strong> no canto inferior.</span>
+        </li>
+        <li class="instruction-item">
+          <span class="instruction-num">4</span>
+          <span class="instruction-text">Guarde o ficheiro <code>.xml</code> no seu computador e importe-o abaixo. O Fiscus preenche os Anexos E, G, G1 e J com os dados calculados.</span>
+        </li>
+      </ul>
+
+      <div class="modal-sep"></div>
+
+      <div class="xml-upload-zone" id="xmlDropZone" onclick="triggerXmlUpload()" ondragover="xmlDragOver(event)" ondrop="xmlDrop(event)">
+        <div class="xml-upload-icon">
+          <svg viewBox="0 0 20 20" fill="none" style="width:20px;height:20px;">
+            <path d="M4 12.5L7 9l2 2.5L12 6l4 6.5H4Z" stroke="var(--gold)" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M4.5 16.5L7 14l2.5 2.5L13 11l3 5.5" stroke="none"/>
+            <rect x="2" y="2" width="16" height="16" rx="3" stroke="var(--gold)" stroke-width="1.3"/>
+            <path d="M7 8h.5M10 8h3M7 11h2M7 14h4" stroke="var(--gold)" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="xml-upload-title" id="xmlUploadTitle">Arraste o ficheiro XML aqui</div>
+        <div class="xml-upload-sub" id="xmlUploadSub">ou clique para selecionar — modelo3_2024.xml</div>
+        <div class="xml-upload-file" id="xmlFileName" style="display:none;margin-top:6px;"></div>
+        <input type="file" id="xmlFileInput" accept=".xml" style="display:none" onchange="handleXmlFile(this)">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="fillXml()" id="btnFill" style="opacity:0.4;pointer-events:none;">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Preencher com dados calculados
+        </button>
+        <button class="btn accent" onclick="downloadXml()" id="btnDownload" style="opacity:0.4;pointer-events:none;">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M6 2v7M3 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Descarregar XML preenchido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+let slotCount = 2;
+
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.nav-link,.nav-sub').forEach(l => l.classList.remove('active'));
+}
+
+function toggleSub(header) {
+  const section = header.closest('.sub-section');
+  section.classList.toggle('collapsed');
+}
+
+function toggleQuadro(header) {
+  const quadro = header.closest('.quadro');
+  quadro.classList.toggle('collapsed');
+}
+
+function addBrokerSlot() {
+  const grid = document.getElementById('brokerGrid');
+  const id = 'slot-' + slotCount++;
+  const div = document.createElement('div');
+  div.className = 'broker-slot';
+  div.id = id;
+  div.innerHTML = `
+    <div class="broker-slot-header">
+      <input type="text" class="broker-name-input" placeholder="Nome do broker (ex: Trading 212)">
+      <span class="broker-slot-badge badge-pending">Aguarda</span>
+      <button class="broker-remove" onclick="removeSlot('${id}')">
+        <svg viewBox="0 0 11 11" fill="none"><path d="M2 2l7 7M9 2L2 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="broker-drop"
+      ondragover="handleDragOver(event,this)"
+      ondragleave="handleDragLeave(event,this)"
+      ondrop="handleDrop(event,this.closest('.broker-slot'))">
+      <div class="drop-icon">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v9M5 7l3-3 3 3" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+      <div class="drop-text">Arraste o ficheiro</div>
+      <div class="drop-formats">CSV · XLSX · XLS</div>
+    </div>
+    <div class="broker-file-info">
+      <div class="file-name"></div>
+      <div class="file-meta"></div>
+      <div class="file-stats">
+        <div class="file-stat"><div class="file-stat-label">Trades</div><div class="file-stat-value file-trades">—</div></div>
+        <div class="file-stat"><div class="file-stat-label">Linhas</div><div class="file-stat-value file-rows">—</div></div>
+      </div>
+    </div>`;
+  grid.appendChild(div);
+}
+
+function removeSlot(id) {
+  const el = document.getElementById(id);
+  if (el) { el.style.opacity = '0'; el.style.transform = 'scale(0.95)'; el.style.transition = 'all 0.2s'; setTimeout(() => el.remove(), 200); }
+}
+
+function handleDragOver(e, dropEl) {
+  e.preventDefault();
+  dropEl.classList.add('dragover');
+}
+
+function handleDragLeave(e, dropEl) {
+  dropEl.classList.remove('dragover');
+}
+
+function handleDrop(e, slot) {
+  e.preventDefault();
+  slot.querySelector('.broker-drop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  processFile(slot, file);
+}
+
+function processFile(slot, file) {
+  const badge = slot.querySelector('.broker-slot-badge');
+  badge.className = 'broker-slot-badge badge-loading';
+  badge.textContent = 'A processar…';
+  setTimeout(() => {
+    slot.classList.add('has-file');
+    badge.className = 'broker-slot-badge badge-done';
+    badge.textContent = 'Processado';
+    const rows = Math.floor(Math.random() * 80) + 20;
+    const trades = Math.floor(rows * 0.6);
+    slot.querySelector('.file-name').textContent = file.name;
+    slot.querySelector('.file-meta').textContent = `Importado · ${new Date().toLocaleDateString('pt-PT')} · ${Math.round(file.size/1024)} KB`;
+    if (slot.querySelector('.file-trades')) slot.querySelector('.file-trades').textContent = trades;
+    if (slot.querySelector('.file-rows')) slot.querySelector('.file-rows').textContent = rows;
+    showToast(`✓ ${file.name} processado com sucesso`, 'success');
+    document.querySelector('.status-dot').className = 'status-dot ready';
+  }, 1400);
+}
+
+function openPDF() {
+  window.open('https://info.portaldasfinancas.gov.pt/pt/apoio_contribuinte/Folhetos_informativos/Documents/folheto_mod3_2024.pdf', '_blank');
+}
+
+function openXmlModal() {
+  document.getElementById('xmlModal').classList.add('open');
+}
+
+function closeXmlModal() {
+  document.getElementById('xmlModal').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('xmlModal')) closeXmlModal();
+}
+
+function triggerXmlUpload() {
+  document.getElementById('xmlFileInput').click();
+}
+
+function handleXmlFile(input) {
+  if (!input.files[0]) return;
+  activateXml(input.files[0].name);
+}
+
+function xmlDragOver(e) {
+  e.preventDefault();
+  document.getElementById('xmlDropZone').style.borderColor = 'var(--gold)';
+}
+
+function xmlDrop(e) {
+  e.preventDefault();
+  document.getElementById('xmlDropZone').style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.xml')) activateXml(file.name);
+}
+
+function activateXml(name) {
+  const zone = document.getElementById('xmlDropZone');
+  zone.classList.add('has-file');
+  document.getElementById('xmlUploadTitle').textContent = 'Ficheiro carregado';
+  document.getElementById('xmlUploadSub').textContent = 'XML do Portal AT pronto para preenchimento';
+  const fn = document.getElementById('xmlFileName');
+  fn.style.display = 'block';
+  fn.textContent = name;
+  document.getElementById('btnFill').style.opacity = '1';
+  document.getElementById('btnFill').style.pointerEvents = 'auto';
+}
+
+function fillXml() {
+  showToast('A preencher anexos E, G, G1, J…', 'info');
+  setTimeout(() => {
+    document.getElementById('btnDownload').style.opacity = '1';
+    document.getElementById('btnDownload').style.pointerEvents = 'auto';
+    showToast('✓ Anexos preenchidos. Pronto para descarregar.', 'success');
+  }, 1600);
+}
+
+function downloadXml() {
+  showToast('✓ XML descarregado — modelo3_2024_fiscus.xml', 'success');
+  closeXmlModal();
+}
+
+function showToast(msg, type) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'success' ? ' success' : '');
+  t.innerHTML = `<svg class="toast-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.5 3L13 5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// Sidebar scroll spy
+const sections = ['sec-upload','sec-trades','sec-dividendos','sec-juros','sec-anexo-e','sec-anexo-g','sec-anexo-g1','sec-anexo-h','sec-anexo-j'];
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+sections.forEach(id => { const el = document.getElementById(id); if (el) observer.observe(el); });
+</script>
+</body>
+</html>

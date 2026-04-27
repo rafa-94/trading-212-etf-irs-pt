@@ -7,6 +7,20 @@
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: var(--font-sans);
+    --color-fis-bg: #07111e;
+    --color-fis-surface: #0d1e30;
+    --color-fis-card: #122134;
+    --color-fis-card-hover: #172840;
+    --color-fis-border: #1c3352;
+    --color-fis-border-light: #234066;
+    --color-fis-accent: #0ddfaa;
+    --color-fis-gold: #f5a623;
+    --color-fis-text: #e8f0f8;
+    --color-fis-muted: #7b95b0;
+    --color-fis-faint: #3d5a75;
+    --color-fis-red: #ef7474;
+    --color-fis-blue: #5894ff;
+    --color-fis-purple: #a78bfa;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -119,11 +133,28 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    z-index: 1;
     }
   body {
     @apply bg-background text-foreground;
     }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(#1c3352 1px, transparent 1px),
+      linear-gradient(90deg, #1c3352 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+    }
+  section[id] {
+    scroll-margin-top: 4rem;
     }
 }
