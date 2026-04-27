@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Section } from "@/components/landing/section"
 import { buttonVariants } from "../ui/button"
+import { ArrowRight } from "lucide-react"
 
 interface CtaSectionProps {
   className?: string
@@ -23,8 +24,9 @@ export function CtaSection({ className }: CtaSectionProps) {
         <div className="flex flex-col items-center gap-4">
           <a
             href="/app"
-            className={buttonVariants({ variant: "default", size: "lg" })}
+            className={cn(buttonVariants({ variant: "default", size: "2xl" }), "font-bold hover:-translate-y-0.5 hover:shadow-[0_8px_32px_color-mix(in_oklch,var(--primary)_30%,transparent)]")}
           >
+            <ArrowRight />
             Abrir o Fiscus
           </a>
           <p className="font-mono text-muted-foreground mt-4">

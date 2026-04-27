@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { getTranslations } from "next-intl/server"
 import { Section } from "@/components/landing/section"
 import { ArrowRight } from "lucide-react"
@@ -30,11 +30,11 @@ export async function Hero({ className }: HeroProps) {
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
-              <a href="/app" className={buttonVariants({ variant: "default", size: "lg"})}>
+              <a href="/app" className={cn(buttonVariants({ variant: "default", size: "2xl" }), "font-bold hover:-translate-y-0.5 hover:shadow-[0_8px_32px_color-mix(in_oklch,var(--primary)_30%,transparent)]")}>
                 <ArrowRight />
                 Abrir o Fiscus
               </a>
-              <a href="#como-funciona" className={buttonVariants({ variant: "outline", size: "lg" })}>Como funciona</a>
+              <a href="#como-funciona" className={cn(buttonVariants({ variant: "outline", size: "2xl" }), "font-bold hover:border-primary! hover:text-primary! hover:bg-background!")}>Como funciona</a>
           </div>
 
           <div className="flex flex-wrap items-center gap-6">

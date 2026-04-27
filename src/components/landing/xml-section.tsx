@@ -37,7 +37,7 @@ interface XmlSectionProps {
 export function XmlSection({ className }: XmlSectionProps) {
   return (
     <Section className={className}>
-      <div className="bg-card border border-border rounded-3xl p-16 max-w-290 mx-auto">
+      <div className="relative bg-card border border-border rounded-3xl p-16 max-w-290 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold font-mono text-[0.68rem] text-gold mb-4">

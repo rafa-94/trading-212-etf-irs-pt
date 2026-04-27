@@ -10,7 +10,7 @@ interface StepCardProps {
 
 export function StepCard({ number, title, description, details }: StepCardProps) {
   return (
-    <div className="bg-card border border-border rounded-xl p-8 relative overflow-hidden hover:border-border/60">
+    <div className="bg-card border border-border rounded-xl p-8  overflow-hidden hover:border-border/60">
       <div className="font-mono text-4xl font-bold text-muted-foreground/40 mb-5">{number}</div>
       <h3 className="font-serif text-lg font-semibold text-foreground mb-3">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed mb-5">{description}</p>
